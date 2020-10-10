@@ -1,10 +1,11 @@
-package com.shuxton.interpreter;
+package com.shuxton.lox;
+
+import static com.shuxton.lox.TokenType.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static com.shuxton.interpreter.TokenType.*;
 
 public class Scanner {
     private final String source;

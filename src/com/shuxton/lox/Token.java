@@ -1,4 +1,4 @@
-package com.shuxton.interpreter;
+package com.shuxton.lox;
 
 public class Token {
     final TokenType type;

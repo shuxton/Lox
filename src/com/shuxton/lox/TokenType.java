@@ -1,4 +1,4 @@
-package com.shuxton.interpreter;
+package com.shuxton.lox;
 
 
 

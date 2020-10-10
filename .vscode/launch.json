@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Lox",
+            "request": "launch",
+            "mainClass": "com.shuxton.lox.Lox",
+            "projectName": "Lox_689a2ac0"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Lox<Jlox Interpreter_98e8d2da>",
+            "request": "launch",
+            "mainClass": "com.shuxton.interpreter.Lox",
+            "projectName": "Jlox Interpreter_98e8d2da"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GenerateAst<Jlox Interpreter_98e8d2da>",
+            "request": "launch",
+            "mainClass": "com.shuxton.tools.GenerateAst",
+            "projectName": "Jlox Interpreter_98e8d2da"
+        }
+    ]
+}
