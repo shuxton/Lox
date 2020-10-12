@@ -6,12 +6,15 @@ import com.shuxton.lox.Expr.Assign;
 import com.shuxton.lox.Expr.Binary;
 import com.shuxton.lox.Expr.Grouping;
 import com.shuxton.lox.Expr.Literal;
+import com.shuxton.lox.Expr.Logical;
 import com.shuxton.lox.Expr.Unary;
 import com.shuxton.lox.Expr.Variable;
 import com.shuxton.lox.Stmt.Block;
 import com.shuxton.lox.Stmt.Expression;
+import com.shuxton.lox.Stmt.If;
 import com.shuxton.lox.Stmt.Print;
 import com.shuxton.lox.Stmt.Var;
+import com.shuxton.lox.Stmt.While;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = new Environment();
@@ -115,18 +118,17 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         stmt.accept(this);
     }
 
-    void executeBlock(List<Stmt> statements,
-    Environment environment) {
-    Environment previous = this.environment;
-    try {
-     this.environment = environment;
+    void executeBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+        try {
+            this.environment = environment;
 
-     for (Stmt statement : statements) {
-      execute(statement);
-      }
-    } finally {
-    this.environment = previous;
-    }
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
 
     private boolean isTruthy(Object object) {
@@ -200,6 +202,40 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitBlockStmt(Block stmt) {
-        executeBlock(stmt.statements, new Environment(environment));        return null;
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+
+    @Override
+    public Void visitIfStmt(If stmt) {
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.thenBranch);
+        } else if (stmt.elseBranch != null) {
+            execute(stmt.elseBranch);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitLogicalExpr(Logical expr) {
+        Object left = evaluate(expr.left);
+
+        if (expr.operator.type == TokenType.OR) {
+            if (isTruthy(left))
+                return left;
+        } else {
+            if (!isTruthy(left))
+                return left;
+        }
+
+        return evaluate(expr.right);
+    }
+
+    @Override
+    public Void visitWhileStmt(While stmt) {
+        while (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.body);
+          }
+        return null;
     }
 }
