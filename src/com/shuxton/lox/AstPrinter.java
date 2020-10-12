@@ -1,6 +1,8 @@
 package com.shuxton.lox;
 
 import com.shuxton.lox.Expr.Assign;
+import com.shuxton.lox.Expr.Call;
+import com.shuxton.lox.Expr.Get;
 import com.shuxton.lox.Expr.Logical;
 import com.shuxton.lox.Expr.Variable;
 
@@ -65,6 +67,18 @@ class AstPrinter implements Expr.Visitor<String> {
 
   @Override
   public String visitLogicalExpr(Logical expr) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String visitCallExpr(Call expr) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String visitGetExpr(Get expr) {
     // TODO Auto-generated method stub
     return null;
   }
