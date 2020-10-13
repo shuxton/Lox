@@ -4,6 +4,8 @@ import com.shuxton.lox.Expr.Assign;
 import com.shuxton.lox.Expr.Call;
 import com.shuxton.lox.Expr.Get;
 import com.shuxton.lox.Expr.Logical;
+import com.shuxton.lox.Expr.Set;
+import com.shuxton.lox.Expr.This;
 import com.shuxton.lox.Expr.Variable;
 
 class AstPrinter implements Expr.Visitor<String> {
@@ -79,6 +81,18 @@ class AstPrinter implements Expr.Visitor<String> {
 
   @Override
   public String visitGetExpr(Get expr) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String visitSetExpr(Set expr) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String visitThisExpr(This expr) {
     // TODO Auto-generated method stub
     return null;
   }

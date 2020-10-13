@@ -15,6 +15,7 @@ import com.shuxton.lox.Expr.Logical;
 import com.shuxton.lox.Expr.Unary;
 import com.shuxton.lox.Expr.Variable;
 import com.shuxton.lox.Stmt.Block;
+import com.shuxton.lox.Stmt.Class;
 import com.shuxton.lox.Stmt.Expression;
 import com.shuxton.lox.Stmt.Function;
 import com.shuxton.lox.Stmt.If;
@@ -148,7 +149,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     void resolve(Expr expr, int depth) {
         locals.put(expr, depth);
-      }
+    }
 
     void executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
@@ -207,7 +208,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         System.out.println(stringify(value));
         return null;
     }
-    
+
     @Override
     public Void visitVarStmt(Var stmt) {
         Object value = null;
@@ -227,22 +228,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Object lookUpVariable(Token name, Expr expr) {
         Integer distance = locals.get(expr);
         if (distance != null) {
-          return environment.getAt(distance, name.lexeme);
+            return environment.getAt(distance, name.lexeme);
         } else {
-          return globals.get(name);
+            return globals.get(name);
         }
-      }
+    }
 
     @Override
     public Object visitAssignExpr(Assign expr) {
         Object value = evaluate(expr.value);
 
-    Integer distance = locals.get(expr);
-    if (distance != null) {
-      environment.assignAt(distance, expr.name, value);
-    } else {
-      globals.assign(expr.name, value);
-    }
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value);
+        } else {
+            globals.assign(expr.name, value);
+        }
 
         return value;
     }
@@ -311,22 +312,63 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Object visitGetExpr(Get expr) {
-        // TODO Auto-generated method stub
-        return null;
+        Object object = evaluate(expr.object);
+        if (object instanceof LoxInstance) {
+          return ((LoxInstance) object).get(expr.name);
+        }
+    
+        throw new RuntimeError(expr.name,
+            "Only instances have properties.");
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr) {
+      Object object = evaluate(expr.object);
+  
+      if (!(object instanceof LoxInstance)) { 
+        throw new RuntimeError(expr.name,
+                               "Only instances have fields.");
+      }
+  
+      Object value = evaluate(expr.value);
+      ((LoxInstance)object).set(expr.name, value);
+      return value;
     }
 
     @Override
     public Void visitFunctionStmt(Function stmt) {
-        LoxFunction function = new LoxFunction(stmt,environment);
+        LoxFunction function = new LoxFunction(stmt, environment,
+        false);        
         environment.define(stmt.name.lexeme, function);
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-          Object value = null;
-    if (stmt.value != null) value = evaluate(stmt.value);
+        Object value = null;
+        if (stmt.value != null)
+            value = evaluate(stmt.value);
 
-    throw new com.shuxton.lox.Return(value);
+        throw new com.shuxton.lox.Return(value);
+    }
+
+    @Override
+    public Void visitClassStmt(Class stmt) {
+        environment.define(stmt.name.lexeme, null);
+
+    Map<String, LoxFunction> methods = new HashMap<>();
+    for (Stmt.Function method : stmt.methods) {
+        LoxFunction function = new LoxFunction(method, environment,
+        method.name.lexeme.equals("init"));      
+        methods.put(method.name.lexeme, function);
+    }
+        LoxClass klass = new LoxClass(stmt.name.lexeme,methods);
+        environment.assign(stmt.name, klass);
+        return null;
+    }
+
+    @Override
+    public Object visitThisExpr(Expr.This expr) {
+      return lookUpVariable(expr.keyword, expr);
     }
 }
